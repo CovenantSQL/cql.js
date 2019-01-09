@@ -52,9 +52,12 @@
     "node": ">=8.9"
   },
   "dependencies": {
-    "sha.js": "^2.4.11"
+    "debug": "^4.1.1",
+    "isomorphic-ws": "^4.0.1",
+    "ws": "^6.1.2"
   },
   "devDependencies": {
+    "@types/debug": "^0.0.31",
     "ava": "1.0.0-beta.7",
     "codecov": "^3.1.0",
     "cz-conventional-changelog": "^2.1.0",

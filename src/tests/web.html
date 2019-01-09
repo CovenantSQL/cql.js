@@ -1,0 +1,25 @@
+<html>
+<script>
+    var ws = new WebSocket('ws://bp00.cn.gridb.io:15150')
+    ws.addEventListener('open', function(e) {
+      console.log('opened', e)
+      ws.send(JSON.stringify({
+        "jsonrpc": "2.0",
+        "method": "bp_getBlockList",
+        "params": [52169, 52175],
+        "id": 1
+      }))
+    })
+
+    ws.addEventListener('message', function(e) {
+      console.log('message', e.data)
+    })
+
+    ws.addEventListener('closed', function(e) {
+      console.log('closed', e)
+    })
+  </script>
+  <body>
+    WebSocket Test
+  </body>
+</html>
