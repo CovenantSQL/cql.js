@@ -69,5 +69,26 @@ export default class WebSocketClient implements CqlWebSocket {
     this.isConnected = false
   }
 
+  public async send(message: any): Promise<boolean> {
+    // TODO
+    if (!this.isConnected) {
+      this.debug('Connection lost, re-connecting')
+      // await this.reconnect()
+    }
+
+    if (!this.isConnected) {
+      this.debug('No established connection, abort sending')
+      return false
+    }
+
+    this.debug('Sending message: ', message)
+    try {
+      this.socket!.send(JSON.stringify(message))
+    } catch (error) {
+      return false
+    }
+    return true
+  }
+
   private noop = ():void => { return }
 }

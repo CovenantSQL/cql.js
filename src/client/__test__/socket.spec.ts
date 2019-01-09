@@ -13,3 +13,23 @@ test('connect websocket', async t => {
   await ws.disconnect()
   t.is(ws.isConnected, false)
 })
+
+test('send message', async t => {
+  let ws = new WebSocketClient(ENDPOINT)
+  await ws.connect()
+
+  ws.socket.onmessage = (e) => {
+    console.log(e.data)
+  }
+
+  let message = {
+    jsonrpc: '2.0',
+    method: 'bp_getBlockList',
+    params: [52169, 52175],
+    id: 1
+  }
+
+  let sent = await ws.send(message)
+
+  t.is(sent, true)
+})
