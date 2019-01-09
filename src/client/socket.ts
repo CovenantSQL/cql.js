@@ -8,7 +8,7 @@ export interface CqlWebSocket {
   connect(): Promise<void>
   disconnect(): Promise<void>
 
-  // send(message: any): Promise<boolean>
+  send(message: any): Promise<boolean>
 }
 
 export default class WebSocketClient implements CqlWebSocket {
