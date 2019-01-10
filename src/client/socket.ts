@@ -1,6 +1,10 @@
 import debugFactory, { IDebugger } from 'debug'
 import WebSocket from 'isomorphic-ws'
 
+import Listeners from './listeners'
+
+export type SocketMessageCallback = (message: any) => void
+
 export interface CqlWebSocket {
   url: string
   isConnected: boolean
@@ -8,7 +12,7 @@ export interface CqlWebSocket {
   connect(): Promise<void>
   disconnect(): Promise<void>
 
-  send(message: any): Promise<boolean>
+  send(message: any, cb: SocketMessageCallback): Promise<boolean>
 }
 
 export default class WebSocketClient implements CqlWebSocket {
@@ -18,10 +22,11 @@ export default class WebSocketClient implements CqlWebSocket {
 
   private connectionPromise?: Promise<void>
   private debug: IDebugger
+  private listeners?: Listeners
 
-  public constructor(url) {
+  constructor(url) {
     this.url = url
-    this.debug = debugFactory('cqlws:socket')
+    this.debug = debugFactory('cql:ws')
   }
 
   public async connect(): Promise<void> {
@@ -36,8 +41,10 @@ export default class WebSocketClient implements CqlWebSocket {
 
       try {
         this.socket = new WebSocket(this.url)
+        this.socket.onmessage = this.onSocketMessage
         this.socket.onopen = () => {
           this.isConnected = true
+          this.listeners = new Listeners()
           resolve()
         }
       } catch (error) {
@@ -61,15 +68,13 @@ export default class WebSocketClient implements CqlWebSocket {
     }
 
     this.debug('Disconnection clean up')
-    this.socket.onopen = this.noop
-    this.socket.onclose = this.noop
-    this.socket.onerror = this.noop
-    this.socket.onmessage = this.noop
-    this.socket = undefined
-    this.isConnected = false
+    this.clearClientInstance()
   }
 
-  public async send(message: any): Promise<boolean> {
+  public async send(
+    message: any,
+    callback: SocketMessageCallback
+  ): Promise<boolean> {
     // TODO
     if (!this.isConnected) {
       this.debug('Connection lost, re-connecting')
@@ -81,13 +86,42 @@ export default class WebSocketClient implements CqlWebSocket {
       return false
     }
 
-    this.debug('Sending message: ', message)
+    this.debug('Sending message: ', JSON.stringify(message, null, 2))
     try {
+      this.listeners.addListener({
+        reqId: message.id,
+        callback
+      })
       this.socket!.send(JSON.stringify(message))
     } catch (error) {
       return false
     }
     return true
+  }
+
+  private onSocketMessage = (
+    event: MessageEvent
+  ) => {
+    let payload: any
+
+    try {
+      payload = JSON.parse(event.data) as { [key: string]: any }
+    } catch (error) {
+      this.debug('JSON parse fail: Covenant API node RPC response error')
+      throw error
+    }
+
+    this.listeners.handleMessage(payload)
+  }
+
+  private clearClientInstance = () => {
+    this.socket.onopen = this.noop
+    this.socket.onclose = this.noop
+    this.socket.onerror = this.noop
+    this.socket.onmessage = this.noop
+    this.socket = undefined
+    this.listeners = undefined
+    this.isConnected = false
   }
 
   private noop = ():void => { return }

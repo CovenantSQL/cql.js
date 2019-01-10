@@ -15,21 +15,20 @@ test('connect websocket', async t => {
 })
 
 test('send message', async t => {
-  let ws = new WebSocketClient(ENDPOINT)
-  await ws.connect()
-
-  ws.socket.onmessage = (e) => {
-    console.log(e.data)
-  }
+  let client = new WebSocketClient(ENDPOINT)
+  await client.connect()
 
   let message = {
     jsonrpc: '2.0',
     method: 'bp_getBlockList',
-    params: [52169, 52175],
+    params: [52170, 52175],
     id: 1
   }
 
-  let sent = await ws.send(message)
+  client.send(message, (res) => {
+    console.log(res)
 
-  t.is(sent, true)
+    t.not(res, undefined)
+  })
+  t.is(1, 1)
 })
