@@ -9,16 +9,19 @@ export interface BpInterface {
   // getBlockListByTimeRange(): Promise<any>
   getBlockByHeight(height: number): Promise<object>
   getBlockByHash(hash: string): Promise<object>
-  // getTransactionListOfBlock(): Promise<any>
-  // getTransactionByHash(): Promise<any>
+  getTransactionListOfBlock(height: number, from: number, to: number): Promise<Array<object>>
+  getTransactionByHash(hash: string): Promise<object>
 }
 
 export enum BpMethodType {
   GET_PROTOCOL_VERSION = 'bp_getProtocolVersion',
   GET_RUNNING_STATUS = 'bp_getRunningStatus',
   GET_BLOCK_LIST = 'bp_getBlockList',
+  // GET_BLOCK_LIST_BY_TIME_RANGE = 'bp_getBlockListByTimeRange',
   GET_BLOCK_BY_HEIGHT = 'bp_getBlockByHeight',
-  GET_BLOCK_BY_HASH = 'bp_getBlockByHash'
+  GET_BLOCK_BY_HASH = 'bp_getBlockByHash',
+  GET_TRANSACTION_LIST_OF_BLOCK = 'bp_getTransactionListOfBlock',
+  GET_TRANSACTION_BY_HASH = 'bp_getTransactionByHash'
 }
 
 export default class Bp implements BpInterface {
@@ -96,6 +99,38 @@ export default class Bp implements BpInterface {
     return new Promise((resolve) => {
       this.client.send(req, (res) => {
         this.debug('Got getBlockByHash response', res)
+        resolve(res.result)
+      })
+    })
+  }
+
+  public getTransactionListOfBlock(
+    height: number,
+    from: number,
+    to: number
+  ): Promise<Array<object>> {
+    let params = [height, from, to]
+    let req: RPCObject = constructRPCObj(BpMethodType.GET_TRANSACTION_LIST_OF_BLOCK, params)
+
+    this.debug('Send getTransactionListOfBlock request', req)
+    return new Promise((resolve) => {
+      this.client.send(req, (res) => {
+        this.debug('Got getTransactionListOfBlock response', res)
+        resolve(res.result)
+      })
+    })
+  }
+
+  public getTransactionByHash(
+    hash: string
+  ): Promise<object> {
+    let params = [hash]
+    let req: RPCObject = constructRPCObj(BpMethodType.GET_TRANSACTION_BY_HASH, params)
+
+    this.debug('Send getTransactionByHash request', req)
+    return new Promise((resolve) => {
+      this.client.send(req, (res) => {
+        this.debug('Got getTransactionByHash response', res)
         resolve(res.result)
       })
     })
