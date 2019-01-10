@@ -7,7 +7,7 @@ export interface RPCObject {
 
 export const constructRPCObj = (
   method: string,
-  params: Array<any>
+  params: Array<any> = []
 ): RPCObject => {
   return {
     jsonrpc: '2.0',

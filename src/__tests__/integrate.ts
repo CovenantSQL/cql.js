@@ -8,6 +8,8 @@ import CQL from '../index'
   console.log(cql.client.isConnected)
 
   // bp
-  let list = await cql.bp.getBlockList(52170, 52175)
-  console.log(list)
+  let version = await cql.bp.getProtocolVersion()
+  console.log(version)
+  // let list = await cql.bp.getBlockList(52170, 52175)
+  // console.log(list)
 })()
