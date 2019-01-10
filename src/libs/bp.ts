@@ -4,18 +4,21 @@ import { RPCObject, constructRPCObj } from '../client/rpc'
 
 export interface BpInterface {
   getProtocolVersion(): Promise<string>
-  // getRunningStatus(): Promise<any>
+  getRunningStatus(): Promise<object>
   getBlockList(from: number, to: number): Promise<Array<object>>
   // getBlockListByTimeRange(): Promise<any>
-  // getBlockByHeight(): Promise<any>
-  // getBlockByHash(): Promise<any>
+  getBlockByHeight(height: number): Promise<object>
+  getBlockByHash(hash: string): Promise<object>
   // getTransactionListOfBlock(): Promise<any>
   // getTransactionByHash(): Promise<any>
 }
 
 export enum BpMethodType {
   GET_PROTOCOL_VERSION = 'bp_getProtocolVersion',
-  GET_BLOCK_LIST = 'bp_getBlockList'
+  GET_RUNNING_STATUS = 'bp_getRunningStatus',
+  GET_BLOCK_LIST = 'bp_getBlockList',
+  GET_BLOCK_BY_HEIGHT = 'bp_getBlockByHeight',
+  GET_BLOCK_BY_HASH = 'bp_getBlockByHash'
 }
 
 export default class Bp implements BpInterface {
@@ -32,10 +35,21 @@ export default class Bp implements BpInterface {
 
   public getProtocolVersion(): Promise<string> {
     let req: RPCObject = constructRPCObj(BpMethodType.GET_PROTOCOL_VERSION)
-    this.debug('Send getProtocolVersion')
+    this.debug('Send getProtocolVersion request', req)
     return new Promise(resolve => {
       this.client.send(req, res => {
         this.debug('Got getProtocolVersion response', res)
+        resolve(res.result)
+      })
+    })
+  }
+
+  public getRunningStatus(): Promise<object> {
+    let req: RPCObject = constructRPCObj(BpMethodType.GET_RUNNING_STATUS)
+    this.debug('Send getRunningStatus request', req)
+    return new Promise(resolve => {
+      this.client.send(req, res => {
+        this.debug('Got getRunningStatus response', res)
         resolve(res.result)
       })
     })
@@ -48,13 +62,41 @@ export default class Bp implements BpInterface {
     let params = [from, to]
     let req: RPCObject = constructRPCObj(BpMethodType.GET_BLOCK_LIST, params)
 
-    this.debug('Send getBlockList of ', req)
+    this.debug('Send getBlockList request', req)
     return new Promise((resolve) => {
       this.client.send(req, (res) => {
         this.debug('Got getBlockList response', res)
-        if (res.id === req.id) {
-          resolve(res.result)
-        }
+        resolve(res.result)
+      })
+    })
+  }
+
+  public getBlockByHeight(
+    height: number
+  ): Promise<object> {
+    let params = [height]
+    let req: RPCObject = constructRPCObj(BpMethodType.GET_BLOCK_BY_HEIGHT, params)
+
+    this.debug('Send getBlockByHeight request', req)
+    return new Promise((resolve) => {
+      this.client.send(req, (res) => {
+        this.debug('Got getBlockByHeight response', res)
+        resolve(res.result)
+      })
+    })
+  }
+
+  public getBlockByHash(
+    hash: string
+  ): Promise<object> {
+    let params = [hash]
+    let req: RPCObject = constructRPCObj(BpMethodType.GET_BLOCK_BY_HASH, params)
+
+    this.debug('Send getBlockByHash request', req)
+    return new Promise((resolve) => {
+      this.client.send(req, (res) => {
+        this.debug('Got getBlockByHash response', res)
+        resolve(res.result)
       })
     })
   }
