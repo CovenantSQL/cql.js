@@ -6,7 +6,7 @@ import Listeners from './listeners'
 export type SocketMessageCallback = (message: any) => void
 
 export interface CqlWebSocket {
-  url: string
+  endpoint: string
   isConnected: boolean
 
   connect(): Promise<void>
@@ -16,7 +16,7 @@ export interface CqlWebSocket {
 }
 
 export default class WebSocketClient implements CqlWebSocket {
-  public url: string
+  public endpoint: string
   public isConnected: boolean = false
   public socket?: any
 
@@ -24,8 +24,8 @@ export default class WebSocketClient implements CqlWebSocket {
   private debug: IDebugger
   private listeners?: Listeners
 
-  constructor(url) {
-    this.url = url
+  constructor(endpoint) {
+    this.endpoint = endpoint
     this.debug = debugFactory('cql:ws')
   }
 
@@ -40,8 +40,9 @@ export default class WebSocketClient implements CqlWebSocket {
       this.debug('Connection promise start, creating and opening socket')
 
       try {
-        this.socket = new WebSocket(this.url)
+        this.socket = new WebSocket(this.endpoint)
         this.socket.onmessage = this.onSocketMessage
+        this.socket.onclose = this.onSocketClosed
         this.socket.onopen = () => {
           this.isConnected = true
           this.listeners = new Listeners()
@@ -75,15 +76,15 @@ export default class WebSocketClient implements CqlWebSocket {
     message: any,
     callback: SocketMessageCallback
   ): Promise<boolean> {
-    // TODO
-    if (!this.isConnected) {
-      this.debug('Connection lost, re-connecting')
-      // await this.reconnect()
+    if (!this.isConnected && !this.endpoint) {
+      this.debug('Empty endpoint and no established connection, abort sending')
+      return false
     }
 
+    // reconnect
     if (!this.isConnected) {
-      this.debug('No established connection, abort sending')
-      return false
+      this.debug('Connection lost, re-connecting')
+      await this.reconnect()
     }
 
     this.debug('Sending message: ', JSON.stringify(message, null, 2))
@@ -114,6 +115,12 @@ export default class WebSocketClient implements CqlWebSocket {
     this.listeners.handleMessage(payload)
   }
 
+  private onSocketClosed = (
+    // event: MessageEvent
+  ) => {
+    this.clearClientInstance()
+  }
+
   private clearClientInstance = () => {
     this.socket.onopen = this.noop
     this.socket.onclose = this.noop
@@ -122,6 +129,14 @@ export default class WebSocketClient implements CqlWebSocket {
     this.socket = undefined
     this.listeners = undefined
     this.isConnected = false
+  }
+
+  private reconnect = async (): Promise<any> => {
+    if (this.endpoint === undefined) {
+      this.debug('No endpoint for reconnection')
+      return false
+    }
+    return this.connect()
   }
 
   private noop = ():void => { return }
