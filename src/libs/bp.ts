@@ -5,10 +5,11 @@ import { RPCObject, constructRPCObj } from '../client/rpc'
 export interface BpInterface {
   getProtocolVersion(): Promise<string>
   getRunningStatus(): Promise<object>
-  getBlockList(from: number, to: number): Promise<Array<object>>
+  getBlockList(page: number, size: number, since: number): Promise<object>
   // getBlockListByTimeRange(): Promise<any>
   getBlockByHeight(height: number): Promise<object>
   getBlockByHash(hash: string): Promise<object>
+  getTransactionList(page: number, size: number, since: string): Promise<object>
   getTransactionListOfBlock(height: number, from: number, to: number): Promise<Array<object>>
   getTransactionByHash(hash: string): Promise<object>
 }
@@ -20,6 +21,7 @@ export enum BpMethodType {
   // GET_BLOCK_LIST_BY_TIME_RANGE = 'bp_getBlockListByTimeRange',
   GET_BLOCK_BY_HEIGHT = 'bp_getBlockByHeight',
   GET_BLOCK_BY_HASH = 'bp_getBlockByHash',
+  GET_TRANSACTION_LIST = 'bp_getTransactionList',
   GET_TRANSACTION_LIST_OF_BLOCK = 'bp_getTransactionListOfBlock',
   GET_TRANSACTION_BY_HASH = 'bp_getTransactionByHash'
 }
@@ -59,10 +61,11 @@ export default class Bp implements BpInterface {
   }
 
   public getBlockList(
-    from: number,
-    to: number
-  ): Promise<Array<object>> {
-    let params = [from, to]
+    page: number,
+    size: number,
+    since: number = 0
+  ): Promise<object> {
+    let params = [since, page, size]
     let req: RPCObject = constructRPCObj(BpMethodType.GET_BLOCK_LIST, params)
 
     this.debug('Send getBlockList request', req)
@@ -99,6 +102,23 @@ export default class Bp implements BpInterface {
     return new Promise((resolve) => {
       this.client.send(req, (res) => {
         this.debug('Got getBlockByHash response', res)
+        resolve(res.result)
+      })
+    })
+  }
+
+  public getTransactionList(
+    page: number,
+    size: number,
+    since: string = ''
+  ): Promise<object> {
+    let params = [since, page, size]
+    let req: RPCObject = constructRPCObj(BpMethodType.GET_TRANSACTION_LIST, params)
+
+    this.debug('Send getTransactionList request', req)
+    return new Promise((resolve) => {
+      this.client.send(req, (res) => {
+        this.debug('Got getTransactionList response', res)
         resolve(res.result)
       })
     })
