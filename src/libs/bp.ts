@@ -107,7 +107,7 @@ export default class Bp implements BpInterface {
     })
   }
 
-  public getTransactionList(
+  public async getTransactionList(
     page: number,
     size: number,
     since: string = ''
@@ -116,12 +116,10 @@ export default class Bp implements BpInterface {
     let req: RPCObject = constructRPCObj(BpMethodType.GET_TRANSACTION_LIST, params)
 
     this.debug('Send getTransactionList request', req)
-    return new Promise((resolve) => {
-      this.client.send(req, (res) => {
-        this.debug('Got getTransactionList response', res)
-        resolve(res.result)
-      })
-    })
+    let result = await this.client.sendRpc(req)
+    this.debug('Got getTransactionList response', result)
+
+    return result
   }
 
   public getTransactionListOfBlock(

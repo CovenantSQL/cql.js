@@ -2,6 +2,7 @@ import debugFactory, { IDebugger } from 'debug'
 import WebSocket from 'isomorphic-ws'
 
 import Listeners from './listeners'
+import { RPCObject } from './rpc'
 
 export type SocketMessageCallback = (message: any) => void
 
@@ -13,6 +14,7 @@ export interface CqlWebSocket {
   disconnect(): Promise<void>
 
   send(message: any, cb: SocketMessageCallback): Promise<boolean>
+  sendRpc(message): Promise<any>
 }
 
 export default class WebSocketClient implements CqlWebSocket {
@@ -22,11 +24,13 @@ export default class WebSocketClient implements CqlWebSocket {
 
   private connectionPromise?: Promise<void>
   private debug: IDebugger
+  private debugRpc: IDebugger
   private listeners?: Listeners
 
   constructor(endpoint) {
     this.endpoint = endpoint
     this.debug = debugFactory('cql:ws')
+    this.debugRpc = debugFactory('cql:rpc')
   }
 
   public async connect(): Promise<void> {
@@ -98,6 +102,23 @@ export default class WebSocketClient implements CqlWebSocket {
       return false
     }
     return true
+  }
+
+  public async sendRpc(
+    req: RPCObject
+  ): Promise<any> {
+    this.debugRpc('Send RPC message', req)
+
+    this.send(req, (res) => {
+      this.debugRpc('Got RPC response', res)
+      return new Promise((resolve, reject) => {
+        if (res.error) {
+          reject(res.error)
+        } else {
+          resolve(res.result)
+        }
+      })
+    })
   }
 
   private onSocketMessage = (
