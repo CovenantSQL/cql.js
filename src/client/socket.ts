@@ -53,7 +53,7 @@ export default class WebSocketClient implements CqlWebSocket {
           resolve()
         }
       } catch (error) {
-        reject(error)
+        reject(JSON.stringify(error, null, 2))
       }
     })
 
@@ -109,11 +109,13 @@ export default class WebSocketClient implements CqlWebSocket {
   ): Promise<any> {
     this.debugRpc('Send RPC message', req)
 
-    this.send(req, (res) => {
-      this.debugRpc('Got RPC response', res)
-      return new Promise((resolve, reject) => {
+    // wait until got response
+    return new Promise((resolve, reject) => {
+      this.send(req, (res) => {
+        this.debugRpc('Got RPC response', res)
+
         if (res.error) {
-          reject(res.error)
+          reject(JSON.stringify(res.error, null, 2))
         } else {
           resolve(res.result)
         }
@@ -125,6 +127,7 @@ export default class WebSocketClient implements CqlWebSocket {
     event: MessageEvent
   ) => {
     let payload: any
+    this.debug('Got socket %s', event.type)
 
     try {
       payload = JSON.parse(event.data) as { [key: string]: any }

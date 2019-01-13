@@ -21,7 +21,7 @@ export default class Listeners {
       }
 
       this.debug(
-        'Found matching listener for request id [%s], forwarding message method of [%s]',
+        'Found matching listener for request id [%s]',
         message.id,
         message.method
       )
