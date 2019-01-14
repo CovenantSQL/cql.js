@@ -9,7 +9,7 @@
   "license": "MIT",
   "keywords": [],
   "scripts": {
-    "dev": "nodemon --watch 'src/**/*.ts' --ignore 'src/**/**.spec.ts' --exec 'ts-node' src/__tests__/integrate.ts",
+    "dev": "nodemon --watch 'src/**/*.ts' --ignore 'src/**/**.spec.ts' --exec 'ts-node' src/__tests__/integration.ts",
     "describe": "npm-scripts-info",
     "build": "run-s clean && run-p build:*",
     "build:main": "tsc -p tsconfig.json",
@@ -55,6 +55,7 @@
   "dependencies": {
     "debug": "^4.1.1",
     "isomorphic-ws": "^4.0.1",
+    "keyvenant": "^0.0.1",
     "ws": "^6.1.2"
   },
   "devDependencies": {

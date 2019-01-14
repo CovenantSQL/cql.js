@@ -24,4 +24,8 @@ import CQL from '../index'
   // console.log(txList)
   let txH = await cql.bp.getTransactionByHash('fooo')
   console.log(txH)
+
+  // create keystore
+  let keystore = cql.keystore.create('foo')
+  console.log('keystore:', keystore)
 })()
