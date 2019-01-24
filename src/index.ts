@@ -18,7 +18,7 @@ export default class CQL {
     this.keystore = new Keystore()
   }
 
-  public connect(): Promise<any> {
-    return this.client.connect()
+  public async connect(): Promise<any> {
+    return await this.client.connect()
   }
 }
