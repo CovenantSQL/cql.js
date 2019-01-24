@@ -70,4 +70,4 @@ cql
 - `getBlockByHash`
 - `getTransactionList`
 - `getTransactionListOfBlock`
-- `getTransactionByHas`
+- `getTransactionByHash`
