@@ -20,7 +20,7 @@ npm i cql.js
 
 ```javascript
 import CQL from 'cql.js'
-;(async () => {
+(async () => {
   // For existing valid websocket endpoint
   // please refer to https://developers.covenantsql.io
   const endpoint = '$COVENANT_BP_WS_ENDPOINT'
@@ -70,4 +70,4 @@ cql
 - `getBlockByHash`
 - `getTransactionList`
 - `getTransactionListOfBlock`
-- `getTransactionByHas`
+- `getTransactionByHash`
