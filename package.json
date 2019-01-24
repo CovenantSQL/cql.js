@@ -1,6 +1,6 @@
 {
   "name": "cql.js",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "general purpose library for CovenantSQL blockchain",
   "main": "build/main/index.js",
   "typings": "build/main/index.d.ts",
