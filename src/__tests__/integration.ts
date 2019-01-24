@@ -1,10 +1,13 @@
 import CQL from '../index'
-
-(async () => {
+;(async () => {
   // connect
   const endpoint = 'ws://bp00.cn.gridb.io:15150'
-  let cql = new CQL(endpoint)
-  await cql.connect()
+  const cql = new CQL(endpoint)
+  try {
+    await cql.connect()
+  } catch (e) {
+    console.error(e)
+  }
   console.log(cql.client.isConnected)
 
   // bp
@@ -22,10 +25,10 @@ import CQL from '../index'
   // console.log(txList)
   // let txList = await cql.bp.getTransactionListOfBlock(52170, 0, 10)
   // console.log(txList)
-  let txH = await cql.bp.getTransactionByHash('fooo')
+  const txH = await cql.bp.getTransactionByHash('fooo')
   console.log(txH)
 
   // create keystore
-  let keystore = cql.keystore.create('foo')
+  const keystore = cql.keystore.create('foo')
   console.log('keystore:', keystore)
 })()
