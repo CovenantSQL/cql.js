@@ -29,6 +29,10 @@ export default class RPCClient implements CqlClient {
   public async connect() {
     this.debug('About to connect to remote API node ws endpoint')
 
+    if (this.isConnected) {
+      return
+    }
+
     try {
       await this.rpc.connect(this.endpoint)
     } catch (error) {
