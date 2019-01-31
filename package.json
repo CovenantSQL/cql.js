@@ -7,7 +7,16 @@
   "module": "build/module/index.js",
   "repository": "https://github.com/foreseaz/test",
   "license": "MIT",
-  "keywords": ["CovenantSQL", "database", "blockchain", "javascript", "typescript", "web", "node", "api"],
+  "keywords": [
+    "CovenantSQL",
+    "database",
+    "blockchain",
+    "javascript",
+    "typescript",
+    "web",
+    "node",
+    "api"
+  ],
   "scripts": {
     "dev": "nodemon --watch 'src/**/*.ts' --ignore 'src/**/**.spec.ts' --exec 'ts-node' src/__tests__/integration.ts",
     "describe": "npm-scripts-info",
@@ -56,6 +65,7 @@
     "debug": "^4.1.1",
     "isomorphic-ws": "^4.0.1",
     "keyvenant": "^0.0.1",
+    "uuid": "^3.3.2",
     "ws": "^6.1.2"
   },
   "devDependencies": {

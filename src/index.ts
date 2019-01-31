@@ -1,9 +1,9 @@
-import WebSocketClient, { CqlWebSocket } from './client/socket'
+import RPCClient, { CqlClient } from './client'
 import Keystore from './libs/keystore'
 import Bp from './libs/bp'
 
 export default class CQL {
-  public client: CqlWebSocket
+  public client: CqlClient
   public bp: Bp
   public options?: object
   public keystore?: any
@@ -13,7 +13,7 @@ export default class CQL {
     options?: object
   ) {
     this.options = options
-    this.client = new WebSocketClient(apiNodeEndpoint)
+    this.client = new RPCClient(apiNodeEndpoint)
     this.bp = new Bp(this.client)
     this.keystore = new Keystore()
   }
