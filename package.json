@@ -63,6 +63,7 @@
   },
   "dependencies": {
     "debug": "^4.1.1",
+    "inquirer": "^6.2.2",
     "isomorphic-ws": "^4.0.1",
     "keyvenant": "^0.0.1",
     "lodash": "^4.17.11",

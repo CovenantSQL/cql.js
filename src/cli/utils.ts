@@ -3,8 +3,7 @@ import gradient from 'gradient-string';
 import _ from 'lodash'
 
 export interface CqliOptions {
-  readonly createKeystore: boolean;
-  readonly recoverFromKeystore: boolean;
+  readonly keystore: boolean;
 }
 
 export function hasCliOptions(
@@ -13,7 +12,8 @@ export function hasCliOptions(
   return _.compact(_.values(opts)).length > 0
 }
 
-export function getIntro(columns: number | undefined): string {
+export function getIntro(): string {
+  const columns = process.stdout.columns
   const ascii = `
    ___                                        _    __    ____   __
   / __\\ ___ __   __ ___  _ __    __ _  _ __  | |_ / _\\  /___ \\ / /
@@ -36,3 +36,5 @@ export function getIntro(columns: number | undefined): string {
       ? chalk.bold(gradient.mind(asciiSmaller))
       : `\n${chalk.cyan.bold.underline('CovenantSQL client cli - cqli')}\n`;
 }
+
+export const underlineChalk = text => `${chalk.cyan.bold.underline(text)}\n`
