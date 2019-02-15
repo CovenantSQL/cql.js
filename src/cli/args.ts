@@ -27,7 +27,7 @@ export async function checkArgs(): Promise<CqliOptions> {
           type: 'boolean'
         },
         recoverFromKeystore: {
-          default: true,
+          default: false,
           type: 'boolean'
         },
       }
@@ -49,17 +49,6 @@ export async function checkArgs(): Promise<CqliOptions> {
     Your version of cqli is outdated.
     Consider using 'npx cqli' to always get the latest version.
     `);
-  }
-
-  const input = cli.input[0];
-  if (!input) {
-    // no project-name provided, return to collect options in interactive mode
-    // note: we always return `install`, so --no-install always works
-    // (important for test performance)
-    return {
-      install: cli.flags.install,
-      starterVersion: cli.pkg.version
-    };
   }
 
   return {

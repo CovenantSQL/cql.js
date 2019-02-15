@@ -14,7 +14,7 @@ import { getIntro, CqliOptions, hasCliOptions } from './utils';
         // return inquire();
         return null
       })()),
-      ...argInfo
+      ...(argInfo as {})
     };
 
   console.log(userOptions)
